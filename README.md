@@ -35,7 +35,7 @@ Construite avec **Tauri 2**, **Rust** et **React + TypeScript**.
 - Export/import de configuration JSON, réinitialisation
 - Support multi-périphérique audio, tray icon, autodémarrage système
 
-<img width="738" height="497" alt="Capture d’écran 2026-08-09 112757" src="https://github.com/user-attachments/assets/c34b1523-0ea0-4f74-9cef-0fab10873213" />
+<img width="788" height="547" alt="Capture d’écran 2026-08-09 112757" src="https://github.com/user-attachments/assets/c34b1523-0ea0-4f74-9cef-0fab10873213" />
 
 ## Démarrage rapide (développement)
 
