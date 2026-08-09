@@ -1,5 +1,7 @@
 # Twitch Voice Reader
 
+<img width="1000" height="1000" alt="TTS" src="https://github.com/user-attachments/assets/e1713038-51ee-45fa-b212-e5f7f07b7c43" />
+
 Application de bureau (Windows / Linux / macOS) qui lit à voix haute le chat
 d'une ou plusieurs chaînes Twitch en temps réel, via une synthèse vocale
 **100 % locale et hors ligne** ([Piper](https://github.com/rhasspy/piper)).
