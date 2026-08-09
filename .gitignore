@@ -1,0 +1,24 @@
+# Node / frontend
+node_modules/
+dist/
+
+# Rust / Tauri
+src-tauri/target/
+# Le dossier src-tauri/resources/piper/ doit rester versionné (au moins le
+# .gitkeep) pour que `tauri dev`/`build` ne échouent pas avec "resource
+# path doesn't exist" sur un clone neuf — seul son contenu volumineux et
+# spécifique à la plateforme de build est ignoré.
+src-tauri/resources/piper/*
+!src-tauri/resources/piper/.gitkeep
+!src-tauri/resources/piper/voices/
+src-tauri/resources/piper/voices/*
+
+# Environnement
+.env
+.env.local
+
+# Éditeurs / OS
+.DS_Store
+.vscode/
+.idea/
+*.log

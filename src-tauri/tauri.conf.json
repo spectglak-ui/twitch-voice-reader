@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Twitch Voice Reader",
+  "version": "0.1.0",
+  "identifier": "com.twitchvoicereader.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Twitch Voice Reader",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 640,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: https://static-cdn.jtvnw.net https://avatars.twitch.tv data:; connect-src 'self' https://id.twitch.tv https://api.twitch.tv wss://irc-ws.chat.twitch.tv https://*.twitch.tv ws://127.0.0.1:* http://127.0.0.1:*; style-src 'self' 'unsafe-inline'",
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$APPDATA/**", "$RESOURCE/**"]
+      }
+    },
+    "trayIcon": {
+      "id": "main",
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true,
+      "tooltip": "Twitch Voice Reader"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Twitch Voice Reader",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "resources/piper/": "piper/"
+    },
+    "externalBin": [],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["French", "English"]
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "11.0",
+      "entitlements": "entitlements.plist"
+    },
+    "linux": {
+      "deb": { "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"] },
+      "appimage": { "bundleMediaFramework": true }
+    }
+  },
+  "plugins": {
+    "shell": { "open": true },
+    "fs": {
+      "requireLiteralLeadingDot": false
+    }
+  }
+}

@@ -1,0 +1,94 @@
+[package]
+name = "twitch-voice-reader"
+version = "0.1.0"
+description = "Lecteur vocal de chat Twitch en temps réel (TTS local via Piper)"
+authors = ["Twitch Voice Reader Team"]
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+repository = "https://github.com/your-org/twitch-voice-reader"
+
+[lib]
+name = "twitch_voice_reader_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# --- Framework applicatif -------------------------------------------------
+tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-autostart = "2"
+
+# --- Runtime asynchrone -----------------------------------------------------
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util", "fs"] }
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+futures-util = "0.3"
+
+# --- HTTP / réseau -----------------------------------------------------------
+# `stream` est requis pour `Response::bytes_stream()` (utilisé par
+# `tts/installer.rs` pour suivre la progression du téléchargement de Piper
+# chunk par chunk) : cette méthode n'existe pas sans cette feature, qui
+# n'est jamais activée par défaut (et encore moins avec
+# `default-features = false`). Erreur de compilation typique si retirée :
+# `no method named 'bytes_stream' found for struct 'reqwest::Response'`.
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"], default-features = false }
+url = "2"
+
+# --- Overlay HTTP + WebSocket local ------------------------------------------
+axum = { version = "0.7", features = ["ws"] }
+tower-http = { version = "0.5", features = ["fs", "cors"] }
+
+# --- Sérialisation ------------------------------------------------------------
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# --- Base de données locale ---------------------------------------------------
+rusqlite = { version = "0.31", features = ["bundled", "chrono"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.24"
+
+# --- Audio ----------------------------------------------------------------------
+rodio = { version = "0.19", default-features = false, features = ["wav", "vorbis"] }
+cpal = "0.15"
+
+# --- Stockage sécurisé des tokens OAuth -----------------------------------------
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
+
+# --- Détection de langue ----------------------------------------------------------
+whatlang = "0.16"
+
+# --- Utilitaires ---------------------------------------------------------------
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+regex = "1"
+once_cell = "1"
+parking_lot = "0.12"
+rand = "0.8"
+base64 = "0.22"
+sha2 = "0.10"
+
+# --- Installation automatique de Piper (téléchargement + extraction) -----------
+# `zip` pour l'archive Windows, `tar`+`flate2` pour les archives .tar.gz
+# Linux/macOS. Voir `tts/installer.rs`.
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tar = "0.4"
+flate2 = "1"
+
+[features]
+# Active les logs verbeux Twitch/TTS en développement
+dev-verbose-logging = []
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

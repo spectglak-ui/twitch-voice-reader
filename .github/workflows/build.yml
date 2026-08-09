@@ -1,0 +1,90 @@
+name: Build Twitch Voice Reader
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            rust-target: x86_64-pc-windows-msvc
+          - platform: ubuntu-22.04
+            rust-target: x86_64-unknown-linux-gnu
+          - platform: macos-latest
+            rust-target: universal-apple-darwin
+
+    runs-on: ${{ matrix.platform }}
+    env:
+      TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Installer Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - name: Cache Cargo
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Dépendances système (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - name: Installer les dépendances npm
+        run: npm ci
+
+      - name: Récupérer Piper (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: ./scripts/install-piper.ps1 -Platform windows-x64
+
+      - name: Récupérer Piper (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: bash ./scripts/install-piper.sh linux-x64
+
+      - name: Préparer les cibles Rust (macOS universal)
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+        # Piper n'est volontairement pas pré-embarqué pour la cible macOS
+        # universelle : voir le commentaire détaillé dans
+        # scripts/build-macos.sh. L'application le télécharge
+        # automatiquement au premier lancement pour la bonne architecture.
+
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signature macOS/Windows : décommenter et fournir les secrets
+          # correspondants pour une distribution publique sans avertissement
+          # Gatekeeper/SmartScreen (voir README, section "Signature de code").
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        with:
+          args: --target ${{ matrix.rust-target }}
+
+      - name: Publier les artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: twitch-voice-reader-${{ matrix.platform }}
+          path: |
+            src-tauri/target/${{ matrix.rust-target }}/release/bundle/**
