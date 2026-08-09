@@ -1,6 +1,6 @@
 # Twitch Voice Reader
 
-<img width="1000" height="1000" alt="TTS" src="https://github.com/user-attachments/assets/e1713038-51ee-45fa-b212-e5f7f07b7c43" />
+<img width="500" height="500" alt="TTS (1)" src="https://github.com/user-attachments/assets/efc6bfd4-0e8e-4e17-b9c1-0870c7d229c7" />
 
 Application de bureau (Windows / Linux / macOS) qui lit à voix haute le chat
 d'une ou plusieurs chaînes Twitch en temps réel, via une synthèse vocale
